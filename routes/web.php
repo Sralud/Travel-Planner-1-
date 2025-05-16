@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\WeatherController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\NewsController;
+use App\Http\Controllers\FlightController;
 
 // Currency API Routes
 Route::get('/currency', [CurrencyController::class, 'index']);
@@ -21,4 +23,10 @@ Route::get('/countries', [CountryController::class, 'index']);
 Route::get('/countries/show', [CountryController::class, 'show']);
 Route::get('/countries/view', [CountryController::class, 'showCountries']);
 Route::get('/countries/{name}', [CountryController::class, 'getCountry']);
+
+// News API Routes
+Route::get('/news/top/{country}', [NewsController::class, 'topHeadlines']);
+// ex: http://127.0.0.1:8000/news/top/france
+Route::get('/news/search', [NewsController::class, 'search']);
+// ex: http://127.0.0.1:8000/news/search?q=tech&country=japan
 

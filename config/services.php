@@ -43,5 +43,9 @@ return [
         'key' => env('OPENWEATHER_API_KEY'),
     ],
     
+    'gnews' => [
+        'key' => env('GNEWS_API_KEY'),
+    ],
+    
     
 ];
