@@ -13,8 +13,6 @@ Route::get('/currency/{base}', [CurrencyController::class, 'getRatesByBase']);
 Route::get('/currency/convert/{from}/{to}/{amount}', [CurrencyController::class, 'convert']);
 
 // Weather API Routes
-Route::get('/weather/forecast/coordinates', [WeatherController::class, 'forecastByCoordinates']);
-Route::get('/weather/coordinates', [WeatherController::class, 'currentByCoordinates']);
 Route::get('/weather/forecast/{city}', [WeatherController::class, 'forecastByCity']);
 Route::get('/weather/{city}', [WeatherController::class, 'currentByCity']);
 
@@ -30,3 +28,11 @@ Route::get('/news/top/{country}', [NewsController::class, 'topHeadlines']);
 Route::get('/news/search', [NewsController::class, 'search']);
 // ex: http://127.0.0.1:8000/news/search?q=tech&country=japan
 
+
+// Flights API Routes
+Route::get('/flights', [FlightController::class, 'index']);
+// ex: http://127.0.0.1:8000/api/api/flights/
+Route::get('/flights/{id}', [FlightController::class, 'show']);
+Route::post('/flights', [FlightController::class, 'store']);
+Route::put('/flights/{id}', [FlightController::class, 'update']);
+Route::delete('/flights/{id}', [FlightController::class, 'destroy']);

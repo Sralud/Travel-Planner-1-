@@ -47,5 +47,10 @@ return [
         'key' => env('GNEWS_API_KEY'),
     ],
     
+    'skyscanner' => [
+        'key' => env('SKYSCANNER_API_KEY'),
+        'host' => 'skyscanner89.p.rapidapi.com',
+    ],
+    
     
 ];
