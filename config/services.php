@@ -47,10 +47,15 @@ return [
         'key' => env('GNEWS_API_KEY'),
     ],
     
-    'skyscanner' => [
+    'rapidapi' => [
         'key' => env('SKYSCANNER_API_KEY'),
         'host' => 'skyscanner89.p.rapidapi.com',
     ],
-    
+
+    'amadeus' => [
+        'key' => env('AMADEUS_CLIENT_KEY'),
+        'secret' => env('AMADEUS_CLIENT_SECRET'),
+        'base_url' => env('AMADEUS_API_BASE', 'https://test.api.amadeus.com'),
+    ],    
     
 ];

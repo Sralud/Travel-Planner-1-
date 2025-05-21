@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use App\Services\CountryService;
 use App\Models\Country;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class CountryController extends Controller
 {
@@ -17,7 +18,7 @@ class CountryController extends Controller
     }
 
     /**
-     * Create and store a new country in the local database
+     * Store a new country in the local database
      */
     public function store(Request $request)
     {
@@ -33,18 +34,18 @@ class CountryController extends Controller
     }
 
     /**
-     * Update an existing country in the local database
+     * Update an existing country
      */
     public function update(Request $request, $code)
     {
         $country = Country::where('code', $code)->firstOrFail();
-
         $country->update($request->only('name', 'region', 'capital'));
+
         return response()->json($country);
     }
 
     /**
-     * Delete a country from the local database
+     * Delete a country by code
      */
     public function destroy($code)
     {
@@ -55,7 +56,7 @@ class CountryController extends Controller
     }
 
     /**
-     * Get all countries from the external API
+     * Get all countries from external API
      */
     public function index()
     {
@@ -65,21 +66,12 @@ class CountryController extends Controller
             return response()->json($response->json());
         }
 
+        Log::error('Failed to fetch all countries', [
+            'status' => $response->status(),
+            'body' => $response->body()
+        ]);
+
         return response()->json(['error' => 'Unable to fetch countries'], 500);
-    }
-
-    /**
-     * Return hardcoded sample country data
-     */
-    public function show()
-    {
-        $countries = [
-            ['name' => 'Japan', 'code' => 'JP', 'region' => 'Asia', 'capital' => 'Tokyo'],
-            ['name' => 'France', 'code' => 'FR', 'region' => 'Europe', 'capital' => 'Paris'],
-            ['name' => 'Brazil', 'code' => 'BR', 'region' => 'South America', 'capital' => 'Brasília'],
-        ];
-
-        return response()->json($countries);
     }
 
     /**
@@ -94,39 +86,25 @@ class CountryController extends Controller
             return view('countries', ['countries' => $countries]);
         }
 
+        Log::error('Failed to fetch countries for view', [
+            'status' => $response->status(),
+            'body' => $response->body()
+        ]);
+
         return view('countries', ['countries' => []]);
     }
 
     /**
-     * Get a single country's details by name
+     * Get country details using CountryService
      */
     public function getCountry($name)
     {
-        $response = $this->countryService->getCountryByName($name);
+        $result = $this->countryService->getCountryByName($name);
 
-        if ($response->successful()) {
-            $data = $response->json();
-
-            if (!empty($data)) {
-                $country = $data[0];
-
-                return response()->json([
-                    'country' => [
-                        'name' => $country['name']['common'] ?? 'Unknown',
-                        'flag' => $country['flag'] ?? '🏳️',
-                        'details' => [
-                            'capital' => $country['capital'][0] ?? 'Unknown',
-                            'population' => number_format($country['population'] ?? 0),
-                            'region' => $country['region'] ?? 'Unknown',
-                        ]
-                    ]
-                ]);
-            }
-
-            return response()->json(['error' => 'Country not found'], 404);
+        if ($result['success']) {
+            return response()->json(['country' => $result['country']]);
         }
 
-        return response()->json(['error' => 'Unable to fetch country data'], 500);
+        return response()->json(['error' => $result['error']], $result['status']);
     }
 }
- 

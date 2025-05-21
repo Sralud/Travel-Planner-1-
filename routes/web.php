@@ -30,9 +30,17 @@ Route::get('/news/search', [NewsController::class, 'search']);
 
 
 // Flights API Routes
-Route::get('/flights', [FlightController::class, 'index']);
-// ex: http://127.0.0.1:8000/api/api/flights/
-Route::get('/flights/{id}', [FlightController::class, 'show']);
-Route::post('/flights', [FlightController::class, 'store']);
-Route::put('/flights/{id}', [FlightController::class, 'update']);
-Route::delete('/flights/{id}', [FlightController::class, 'destroy']);
+Route::get('/flights/search', [FlightController::class, 'searchFlights']);
+Route::get('/flights/search', [FlightController::class, 'searchByLocation']);
+//http://localhost:8000/flights/search?origin=MNL&destination=CEB&date=2025-07-02
+
+Route::get('/flights/search', [FlightController::class, 'searchByLocation'])->name('flights.search');
+//http://localhost:8000/flights/search?origin=MNL&destination=JFK&date=2025-05-25
+
+Route::get('/api/flights/search', [FlightController::class, 'searchFlightsJson'])->name('flights.search.json');
+// routes/web.php
+Route::get('/flights/search', [FlightController::class, 'searchFlightsView'])->name('flights.search.view');
+
+
+
+

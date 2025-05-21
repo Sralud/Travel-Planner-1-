@@ -2,77 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FlightSearch;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Services\FlightService;
 
 class FlightController extends Controller
 {
-    public function index()
+    protected $flightService;
+
+    public function __construct(FlightService $flightService)
     {
-        return response()->json(FlightSearch::all());
+        $this->flightService = $flightService;
     }
 
-    public function show($id)
-    {
-        $flight = FlightSearch::find($id);
-        return $flight
-            ? response()->json($flight)
-            : response()->json(['message' => 'Not found'], 404);
-    }
-
-    public function store(Request $request)
+    // JSON response
+    public function searchFlightsJson(Request $request)
     {
         $request->validate([
-            'origin' => 'required',
-            'destination' => 'required',
-            'departure_date' => 'required|date',
+            'origin' => 'required|string',
+            'destination' => 'required|string',
+            'date' => 'required|date_format:Y-m-d',
         ]);
 
-        $flight = FlightSearch::create($request->only(['origin', 'destination', 'departure_date']));
-        return response()->json($flight, 201);
-    }
+        try {
+            $flights = $this->flightService->searchFlights(
+                $request->input('origin'),
+                $request->input('destination'),
+                $request->input('date')
+            );
 
-    public function update(Request $request, $id)
-    {
-        $flight = FlightSearch::find($id);
+            // Format output to desired JSON structure
+            $formatted = collect($flights)->map(function ($flight, $index) {
+                $itinerary = $flight['itineraries'][0] ?? [];
+                $segments = $itinerary['segments'][0] ?? [];
 
-        if (!$flight) {
-            return response()->json(['message' => 'Not found'], 404);
+                return [
+                    'flightId' => (string) ($index + 1),
+                    'price' => [
+                        'total' => $flight['price']['total'],
+                        'currency' => $flight['price']['currency'],
+                    ],
+                    'departure' => [
+                        'iataCode' => $segments['departure']['iataCode'] ?? 'N/A',
+                        'dateTime' => $segments['departure']['at'] ?? 'N/A',
+                    ],
+                    'arrival' => [
+                        'iataCode' => $segments['arrival']['iataCode'] ?? 'N/A',
+                        'dateTime' => $segments['arrival']['at'] ?? 'N/A',
+                    ],
+                ];
+            });
+
+            return response()->json($formatted);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to fetch flights data.',
+                'details' => $e->getMessage(),
+            ], 500);
         }
-
-        $flight->update($request->only(['origin', 'destination', 'departure_date']));
-        return response()->json(['message' => 'Updated', 'data' => $flight]);
     }
 
-    public function destroy($id)
+    // Blade view response
+    public function searchFlightsView(Request $request)
     {
-        $flight = FlightSearch::find($id);
-        if (!$flight) {
-            return response()->json(['message' => 'Not found'], 404);
-        }
-
-        $flight->delete();
-        return response()->json(['message' => 'Deleted']);
-    }
-
-    public function search(Request $request)
-    {
-        $origin = $request->query('origin', 'MNL-sky');
-        $destination = $request->query('destination', 'CEB-sky');
-        $date = $request->query('date', '2024-06-15');
-
-        $response = Http::withHeaders([
-            'X-RapidAPI-Key' => env('SKYSCANNER_API_KEY'),
-            'X-RapidAPI-Host' => 'skyscanner89.p.rapidapi.com'
-        ])->get('https://skyscanner89.p.rapidapi.com/search', [
-            'adults' => '1',
-            'origin' => $origin,
-            'destination' => $destination,
-            'departureDate' => $date,
-            'currency' => 'USD'
+        $request->validate([
+            'origin' => 'required|string',
+            'destination' => 'required|string',
+            'date' => 'required|date_format:Y-m-d',
         ]);
 
-        return response()->json(json_decode($response->body()));
+        try {
+            $flights = $this->flightService->searchFlights(
+                $request->input('origin'),
+                $request->input('destination'),
+                $request->input('date')
+            );
+            return view('flights.search', ['flights' => $flights]);
+        } catch (\Exception $e) {
+            return view('flights.search')->with('error', 'Failed to fetch flights data: ' . $e->getMessage());
+        }
     }
 }
