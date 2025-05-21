@@ -53,7 +53,7 @@ class FlightService
         // Call flight offers search
         $response = Http::withToken($accessToken)
             ->post($this->baseUrl . '/v2/shopping/flight-offers', [
-                'currencyCode' => 'USD',
+                'currencyCode' => 'PHP',
                 'originDestinations' => [
                     [
                         'id' => '1',

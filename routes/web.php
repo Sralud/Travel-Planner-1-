@@ -9,7 +9,6 @@ use App\Http\Controllers\FlightController;
 
 // Currency API Routes
 Route::get('/currency', [CurrencyController::class, 'index']);
-Route::get('/currency/{base}', [CurrencyController::class, 'getRatesByBase']);
 Route::get('/currency/convert/{from}/{to}/{amount}', [CurrencyController::class, 'convert']);
 
 // Weather API Routes
@@ -18,7 +17,6 @@ Route::get('/weather/{city}', [WeatherController::class, 'currentByCity']);
 
 // Country API Routes
 Route::get('/countries', [CountryController::class, 'index']);
-Route::get('/countries/show', [CountryController::class, 'show']);
 Route::get('/countries/view', [CountryController::class, 'showCountries']);
 Route::get('/countries/{name}', [CountryController::class, 'getCountry']);
 
