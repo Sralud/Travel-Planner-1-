@@ -102,7 +102,25 @@ class CountryController extends Controller
         $result = $this->countryService->getCountryByName($name);
 
         if ($result['success']) {
-            return response()->json(['country' => $result['country']]);
+            $data = $result['country'];
+
+            // Optional: you can add custom or dynamic tags here
+            $tags = match (strtolower($data['name'])) {
+                'japan' => ['island', 'tech', 'sushi'],
+                'philippines' => ['beaches', 'islands', 'culture'],
+                'italy' => ['pizza', 'fashion', 'history'],
+                'new zealand' => ['kiwi', 'nature', 'rugby'],
+                default => ['travel', 'explore']
+            };
+
+            return response()->json([
+                'name' => $data['name'],
+                'capital' => $data['details']['capital'],
+                'population' => $data['details']['population'],
+                'region' => $data['details']['region'],
+                'flag' => $data['flag'],
+                'tags' => $tags
+            ]);
         }
 
         return response()->json(['error' => $result['error']], $result['status']);
