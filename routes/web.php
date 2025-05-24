@@ -28,17 +28,14 @@ Route::get('/news/search', [NewsController::class, 'search']);
 
 
 // Flights API Routes
-Route::get('/flights/search', [FlightController::class, 'searchFlights']);
-Route::get('/flights/search', [FlightController::class, 'searchByLocation']);
-//http://localhost:8000/flights/search?origin=MNL&destination=CEB&date=2025-07-02
 
-Route::get('/flights/search', [FlightController::class, 'searchByLocation'])->name('flights.search');
-//http://localhost:8000/flights/search?origin=MNL&destination=JFK&date=2025-05-25
-
+// API route (for JSON responses)
 Route::get('/api/flights/search', [FlightController::class, 'searchFlightsJson'])->name('flights.search.json');
-// routes/web.php
-Route::get('/flights/search', [FlightController::class, 'searchFlightsView'])->name('flights.search.view');
+//http://127.0.0.1:8000/api/flights/search?origin=MNL&destination=CEB&date=2025-07-02
 
+// Web route (Blade View)
+Route::get('/flights/search', [FlightController::class, 'searchFlightsView'])->name('flights.search.view');
+//http://127.0.0.1:8000/flights/search?origin=MNL&destination=JFK&date=2025-05-25
 
 
 
