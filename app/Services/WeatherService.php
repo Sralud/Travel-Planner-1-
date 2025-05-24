@@ -35,10 +35,10 @@ class WeatherService
 
             return json_decode($response->getBody(), true);
         } catch (\Exception $e) {
-            Log::error('WeatherService error: ' . $e->getMessage());
+            Log::error('WeatherService error (city): ' . $e->getMessage());
             return [
                 'error' => true,
-                'message' => $e->getMessage(),
+                'message' => 'Failed to fetch current weather by city.',
             ];
         }
     }
@@ -59,61 +59,12 @@ class WeatherService
 
             return json_decode($response->getBody(), true);
         } catch (\Exception $e) {
-            Log::error('WeatherService forecast error: ' . $e->getMessage());
+            Log::error('WeatherService error (forecast city): ' . $e->getMessage());
             return [
                 'error' => true,
-                'message' => $e->getMessage(),
+                'message' => 'Failed to fetch forecast by city.',
             ];
         }
     }
 
-    /**
-     * Get current weather by coordinates.
-     */
-    public function getCurrentWeatherByCoordinates($lat, $lon)
-    {
-        try {
-            $response = $this->client->get('weather', [
-                'query' => [
-                    'lat' => $lat,
-                    'lon' => $lon,
-                    'appid' => $this->apiKey,
-                    'units' => 'metric',
-                ],
-            ]);
-
-            return json_decode($response->getBody(), true);
-        } catch (\Exception $e) {
-            Log::error('WeatherService error (coords): ' . $e->getMessage());
-            return [
-                'error' => true,
-                'message' => $e->getMessage(),
-            ];
-        }
-    }
-
-    /**
-     * Get 5-day forecast by coordinates.
-     */
-    public function getForecastByCoordinates($lat, $lon)
-    {
-        try {
-            $response = $this->client->get('forecast', [
-                'query' => [
-                    'lat' => $lat,
-                    'lon' => $lon,
-                    'appid' => $this->apiKey,
-                    'units' => 'metric',
-                ],
-            ]);
-
-            return json_decode($response->getBody(), true);
-        } catch (\Exception $e) {
-            Log::error('WeatherService forecast error (coords): ' . $e->getMessage());
-            return [
-                'error' => true,
-                'message' => $e->getMessage(),
-            ];
-        }
-    }
 }

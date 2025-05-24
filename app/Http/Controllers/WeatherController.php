@@ -27,24 +27,4 @@ class WeatherController extends Controller
         $data = $this->weatherService->getForecastByCity($city);
         return response()->json($data);
     }
-
-    // GET /weather/coordinates?lat=...&lon=...
-    public function currentByCoordinates(Request $request)
-    {
-        $lat = $request->query('lat');
-        $lon = $request->query('lon');
-
-        $data = $this->weatherService->getCurrentWeatherByCoordinates($lat, $lon);
-        return response()->json($data);
-    }
-
-    // GET /weather/forecast/coordinates?lat=...&lon=...
-    public function forecastByCoordinates(Request $request)
-    {
-        $lat = $request->query('lat');
-        $lon = $request->query('lon');
-
-        $data = $this->weatherService->getForecastByCoordinates($lat, $lon);
-        return response()->json($data);
-    }
 }

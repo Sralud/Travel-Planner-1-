@@ -17,33 +17,26 @@ class CurrencyController extends Controller
     // GET /currency
     public function index()
     {
-        $rates = $this->currencyService->getRates('USD');
+        $rates = $this->currencyService->getRatesByBase('USD');
         return response()->json($rates);
     }
 
     // GET /currency/{base}
     public function getRatesByBase($base)
     {
-        $rates = $this->currencyService->getRates(strtoupper($base));
+        $rates = $this->currencyService->getRatesByBase($base);
         return response()->json($rates);
     }
 
     // GET /currency/convert/{from}/{to}/{amount}
     public function convert($from, $to, $amount)
     {
-        $rates = $this->currencyService->getRates(strtoupper($from));
+        $result = $this->currencyService->convert($from, $to, floatval($amount));
 
-        if (isset($rates['data'][$to])) {
-            $rate = $rates['data'][$to]['value'];
-            return response()->json([
-                'from' => strtoupper($from),
-                'to' => strtoupper($to),
-                'amount' => floatval($amount),
-                'converted' => floatval($amount) * $rate,
-                'rate' => $rate,
-            ]);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error'], 'message' => $result['message']], 404);
         }
 
-        return response()->json(['error' => 'Currency not found'], 404);
+        return response()->json($result);
     }
 }
