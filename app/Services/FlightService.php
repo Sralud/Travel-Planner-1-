@@ -13,13 +13,14 @@ class FlightService
 
     public function __construct()
     {
-        $this->clientId = config('services.amadeus.key');
-        $this->clientSecret = config('services.amadeus.secret');
-        $this->baseUrl = config('services.amadeus.base_url');
+        $this->clientId = config('services.amadeus.client_id');
+        $this->clientSecret = config('services.amadeus.client_secret');
+        $this->baseUrl = rtrim(config('services.amadeus.base_uri'), '/');
 
         Log::info('FlightService initialized', [
             'clientIdSet' => !empty($this->clientId),
             'clientSecretSet' => !empty($this->clientSecret),
+            'baseUrl' => $this->baseUrl,
         ]);
     }
 
@@ -29,7 +30,7 @@ class FlightService
             throw new \Exception('AMADEUS_CLIENT_ID or AMADEUS_CLIENT_SECRET is not set.');
         }
 
-        // Get access token
+        // Step 1: Get access token
         $response = Http::withBasicAuth($this->clientId, $this->clientSecret)
             ->asForm()
             ->post($this->baseUrl . '/v1/security/oauth2/token', [
@@ -50,7 +51,7 @@ class FlightService
             throw new \Exception('Access token not found in response.');
         }
 
-        // Call flight offers search
+        // Step 2: Search for flights
         $response = Http::withToken($accessToken)
             ->post($this->baseUrl . '/v2/shopping/flight-offers', [
                 'currencyCode' => 'PHP',

@@ -36,26 +36,24 @@ return [
     ],
 
     'currency' => [
+        'base_uri' => env('CURRENCY_API_BASE_URL', 'https://api.exchangerate-api.com/'),
         'key' => env('CURRENCY_API_KEY'),
     ],
 
     'openweather' => [
+        'base_uri' => env('OPENWEATHER_API_BASE_URL', 'https://api.openweathermap.org/'),
         'key' => env('OPENWEATHER_API_KEY'),
     ],
-    
+
     'gnews' => [
+        'base_uri' => env('GNEWS_API_BASE_URL', 'https://gnews.io/'),
         'key' => env('GNEWS_API_KEY'),
-    ],
-    
-    'rapidapi' => [
-        'key' => env('SKYSCANNER_API_KEY'),
-        'host' => 'skyscanner89.p.rapidapi.com',
     ],
 
     'amadeus' => [
-        'key' => env('AMADEUS_CLIENT_KEY'),
-        'secret' => env('AMADEUS_CLIENT_SECRET'),
-        'base_url' => env('AMADEUS_API_BASE', 'https://test.api.amadeus.com'),
-    ],    
+        'client_id' => env('AMADEUS_CLIENT_ID'),
+        'client_secret' => env('AMADEUS_CLIENT_SECRET'),
+        'base_uri' => env('AMADEUS_API_BASE', 'https://test.api.amadeus.com/'),
+    ],
     
 ];
