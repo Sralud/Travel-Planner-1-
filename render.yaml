@@ -1,22 +1,26 @@
 services:
   - type: web
-    name: laravel-backend
+    name: travel-planner-backend
     env: php
     plan: starter
     buildCommand: |
+      # Ensure persistent storage directory for SQLite
+      mkdir -p /var/data
+      touch /var/data/database.sqlite  # Create if not exists
+      
       # Install PHP dependencies
       composer install --no-dev --optimize-autoloader
       
-      # Cache config/routes/views for performance
+      # Cache Laravel config, routes, views
       php artisan config:cache
       php artisan route:cache
       php artisan view:cache
       
-      # Install Node.js (since PHP environment doesn't have it)
+      # Install Node.js for Vite build
       curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
       apt-get install -y nodejs
       
-      # Install frontend dependencies & build assets
+      # Install and build frontend assets
       npm install
       npm run build
       
@@ -29,4 +33,8 @@ services:
       - key: APP_DEBUG
         value: "false"
       - key: APP_URL
-        value: https://your-app-url.com  # Replace with your real URL
+        value: https://travel-planner-1-h3oa.onrender.com # Replace with your Render URL
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /var/data/database.sqlite
